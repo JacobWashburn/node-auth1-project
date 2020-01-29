@@ -1,10 +1,11 @@
 const router = require('express').Router();
-const db = require('./userModel');
+const db = require('./user-model');
 const bcript = require('bcryptjs');
+const Auth = require('../auth/restricted-middleware')
 
 const secret = 'hellohello';
 
-router.get('/', (req, res) => {
+router.get('/',Auth, (req, res) => {
     db.find()
         .then(users => {
             if (users) {

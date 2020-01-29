@@ -12,7 +12,6 @@ function find() {
 }
 
 function findBy(filter) {
-    console.log('a;lsdjf;lasdjfjasldkjfl;asjdfl;k------', filter);
     return db('users')
         .select('id', 'user_name', 'user_password')
         .where('user_name', filter)
