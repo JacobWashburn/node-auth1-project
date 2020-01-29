@@ -1,12 +1,12 @@
 const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
 const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(session);
+const dbConnection = require('../database/dbConfig');
 const apiRouter = require('./apiRouter.js');
 const userRouter = require('../users/user-router');
 const authRouter = require('../auth/auth-router');
-const helmet = require('helmet');
-const cors = require('cors');
-const dbConnection = require('../database/dbConfig');
 const server = express();
 
 const sessionConfig = {
@@ -18,7 +18,7 @@ const sessionConfig = {
     }, // 30 seconds in milliseconds
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
-    saveUninitialized: true, // must be set to false per GDPR compliance
+    saveUninitialized: false, // must be set to false per GDPR compliance
     store: new KnexSessionStore({
         knex: dbConnection,
         tablename: 'sessions',
@@ -30,8 +30,12 @@ const sessionConfig = {
 
 server.use(helmet());
 server.use(express.json());
-server.use(cors());
+server.use(cors({
+    credentials: true, // accept and send cookies to those cors requests
+    origin: "http://localhost:3000"
+}));
 server.use(session(sessionConfig));
+
 
 server.use('/api', apiRouter);
 server.use('/api/auth', authRouter);
